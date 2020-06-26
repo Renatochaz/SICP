@@ -1,3 +1,1 @@
-;; Some test to initialize file
-
-;; second test
+;; Exercise 1.2
