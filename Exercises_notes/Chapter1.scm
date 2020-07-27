@@ -75,7 +75,28 @@ a
 (= a b)
 
 ;;;1.1.5 - Substitution model for procedure application
+;;; Nota that the substitution model is just a preliminar model to start thinking about procedure application
+;;; Later on more complicated models will be introduced that are in pair with the interpreter functionality
+;;; Now let an example take place, defining some stuff:
 
+;;; First compound procedure
 
+(define square (lambda (x) (* x x)))
 
+;square is now a operator, definied with the formal parameter x, and body (* x x), this is a compound procedure
 
+(define sum-of-squares (lambda (x y) (+ (square x) (square y))))
+;compound procedure that uses other compond procedure
+
+(define f (lambda (a) (sum-of-squares (+ a 1) (* a 2))))
+
+(f 5)
+; value 136
+
+;;; To evaluate (f a), the substitution model will evaluate the body of the
+;;; procedure f (sum-of-squares (+ a 1) (* a 2)), and replacete with
+;;; the formal parameters for a: (sum-of-squares (+ 5 1) (* 5 2))
+;;; Evaluating this leads to 6 and 10, so now the model will evaluate again
+;;; with the new values and the body of the left operator (sum of squares)
+;;; this leads to (+ (square 6) (square 10)), and this reduces to:
+;;; (+ (* 6 6) (* 10 10)), that finally evaluates to 136
