@@ -100,3 +100,49 @@ a
 ;;; with the new values and the body of the left operator (sum of squares)
 ;;; this leads to (+ (square 6) (square 10)), and this reduces to:
 ;;; (+ (* 6 6) (* 10 10)), that finally evaluates to 136
+
+;;; An alternative method is the normal order, which woudn't evaluate the operands till their values were needed
+;;; In this case, it would substitute operands until only primitive expressions remains, and then evaluate
+;;; (f 5) would reduce to > (sum-of-squares (+ 5 1) (* 5 2)) > (+ (square (+ 5 1) square (* 5 2))) >
+;;; (+ (* (+ 5 1) (+ 5 1)) (* (*5 2) (*5 2))), and then evaluate to > (+ (* 6 6) (* 10 10)) > (+ 36 100) > 136
+;;; there are some cases where normal order and substitution doesn't yied equivalent values.
+;;; normal order loses efficiency to some redudance of evaluation, but is valuable in some cases (later apresented)
+
+;;; 1.1.6 - Conditional expressions and predicates
+
+;;; General form of a conditional expression (cond):
+;;; (cond (<p1> <e1>))
+;;;       (<p2> <e2>))
+;;;   ... (<pn> <en>))
+
+;;; (<p> <e>) is the clause, with <p> being the predicate and <e> the consequent expression if the predicate <p> =true
+;;; the cond expression evaluates the first predicate <p1>, if its true returns <e1>,if false evaluates <p2>
+;;; this goes on until a predicate is TRUE, then it stops after returning the consequent expression.
+;;; if no predicate is true, the cond is undefined
+;;; Else can be used at the last predicate to always return a value if all predicates are false (or any expression that
+;;; always evaluate to true instead of else).
+;;; If expressions can be used in almost the same way, but without else with the general form (if <p> <e> <alternative>)
+;;; that always returns the alternative if p is FALSE :
+;;; (if ( < x 0)
+;;;     (- x)
+;;;     x)
+
+;;; There is also logical compositions operators, such as: and, or and not.
+;;; not inverse the evaluation (both ways from true to false)
+;;; not is a ordinary procedure, or & and are special forms, since subexpressions are not necessarily evaluated
+;;; examples:
+
+; 5 < x < 10
+(define test (lambda (x) (and (> x 5) (< x 10))))
+(test 3)
+(test 7)
+
+;number greater or equal to another
+(define >= (lambda (x y) (or (> x y) (= x y))))
+(>= 3 4)
+(>= 4 3)
+
+(define >= (lambda (x y) (not (< x y))))
+(>= 3 4)
+(>= 4 3)
+
