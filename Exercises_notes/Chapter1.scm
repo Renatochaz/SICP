@@ -146,3 +146,33 @@ a
 (>= 3 4)
 (>= 4 3)
 
+;;; Exercise 1.2
+
+(/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 1 3))))) (* 3 (* (- 6 2) (- 2 7))))
+; -43/180
+
+;;; Exercise 1.3
+
+(define square (lambda (x) (* x x)))
+
+(define sum-of-squares (lambda (x y) (+ (square x) (square y))))
+
+(define larger (lambda (x y z)
+		 (cond ((and (< x y) (< x z)) (sum-of-squares y z))
+		       ((and (< y x) (< y z)) (sum-of-squares x z))
+		       (else (sum-of-squares x y)))))
+
+(larger 1 2 3) ;13
+(larger 3 2 4) ;25
+(larger 4 5 1) ;41
+
+;;; Exercise 1.4
+
+(define a-plus-abs-b (lambda (a b)
+		       ((if (> b 0) + -) a b)))
+; Since we can use compound expressions as operators, this functions uses
+; this property to make a if statement as operator, if b is a negative value
+; the if will return the primitive operator (-) which will turn the
+; -b in +b, (the absolute value of b)
+
+
