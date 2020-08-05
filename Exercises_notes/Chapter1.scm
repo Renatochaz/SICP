@@ -1,3 +1,4 @@
+
 ;;; This file make notes about the sub-chapters
 ;;; And do the exercises of the chapters associated with the sub-chapters within the named sub-section
 
@@ -175,4 +176,117 @@ a
 ; the if will return the primitive operator (-) which will turn the
 ; -b in +b, (the absolute value of b)
 
+;;; 1.1.7 sqr by newthon's method
 
+(define sqrt-iter (lambda (guess x)
+		    (if (good-enough? guess x)
+			guess
+			(sqrt-iter (improve guess x) x)
+			)))
+
+(define improve (lambda (guess x)
+		  (average guess (/ x guess))))
+
+(define average (lambda (x y)
+		  (/ (+ x y) 2)))
+(define good-enough? (lambda (guess x)
+		       (< (abs (- (square guess) x)) 0.001)))
+(define sqrt (lambda (x)
+	       (sqrt-iter 1.0 x)))
+(define square (lambda (x)
+		 (* x x)))
+
+(sqrt 9)
+
+;;; Exercise 1.6
+
+(define new-if (lambda (predicate then-clause else-clause)
+		 (cond (predicate then-clause)
+		       (else else-clause))))
+
+(new-if (= 2 3) 0 5)
+(new-if (= 1 1) 0 5)
+
+(define sqrt-iter (lambda (guess x)
+		    (new-if (good-enough? guess x)
+			    guess
+			    (sqrt-iter (improve guess x) x)
+			    )))
+(sqrt 9)
+
+;;; In the special case IF, the evaluation process will evaluate the predicate (good-eough?) and return guess (if true)  or return the
+;;; consequence (sqrt iter)
+;;; But the new if don't use the special rule, and it will instead evaluate >
+;;; (new-if (good-enough? guess x) guess (sqrt-iter (improve guess x) x))
+;;; as soons as good enough is false, it evaluates each element of the combination (sqrt-iter (improve guess x) x)
+;;; because of the recursive feature, it evaluates sqrt-iter and we get an infinite loop, returning maximum recursion depth
+
+;;; Exercise 1.7
+
+(sqrt 0.01)
+;fails
+
+(sqrt 9999999)
+;fails
+
+; new
+(define sqrt-iter (lambda (guess x guesst)
+		    (if (good-enough? guess guesst)
+			guess
+			(sqrt-iter (improve guess x) x (update-guess (improve guess x) guesst guess x))
+			)))
+
+(define update-guess (lambda (iguess guesst guess x)
+		       (if (= (improve 1.0 x) iguess)
+			   guesst
+			   guess)))
+
+(define good-enough? (lambda (guess guesst)
+		       (< (abs (- guess guesst)) 0.0000001)))
+
+(define sqrt (lambda (x)
+	       (sqrt-iter 1.0 x 1.1)))
+
+;;; 1.1.8
+
+(define sqrt-iter2 (lambda (guess x)
+		    (if (good-enough?2 guess x)
+			guess
+			(sqrt-iter2 (improve2 guess x) x)
+			)))
+
+(define improve2 (lambda (guess x)
+		  (average2 (/ x (square guess)) (* 2 guess))))
+
+(define average2 (lambda (x y)
+		  (/ (+ x y) 3)))
+(define good-enough?2 (lambda (guess x)
+		       (< (abs (- (cube-square guess) x)) 0.001)))
+(define sqrt-cube (lambda (x)
+	       (sqrt-iter2 1.0 x)))
+(define square (lambda (x) (* x x)))
+
+(define cube-square (lambda (x) (* x x x)))
+
+(sqrt-cube 8)
+
+;;; The square problems works, but we must think that we are making separete procedures
+;;; such as good-enough? and average in the enviroment, and if someone writes
+;;; a different procedure with the same name? in a multi people project it can happen
+;;; so we write the program such as the procedures are local to sqrt
+;;; this nesting is called box structure
+;;; note that we will pass only one "x" to the program, because the same x works for all procedures
+
+(define sqrt (lambda (x)
+	       (define good-enough? (lambda (guess)
+				      (< (abs (- (square guess) x)) 0.001)))
+	       (define improve (lambda (guess)
+				 (average guess (/ x guess))))
+	       (define sqrt-iter (lambda (guess)
+				   (if (good-enough? guess)
+				       guess
+				       (sqrt-iter (improve guess)))))
+	       (sqrt-iter 1.0)))
+
+(sqrt 9)
+	       
